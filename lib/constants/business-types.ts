@@ -1,0 +1,23 @@
+export const businessTypes = [
+  { value: "almacen", label: "Almacén" },
+  { value: "kiosko", label: "Kiosko" },
+  { value: "farmacia", label: "Farmacia local" },
+  { value: "panaderia", label: "Panadería de barrio" },
+  { value: "peluqueria", label: "Peluquería o Barbería" },
+  { value: "taller", label: "Taller" },
+  { value: "lavanderia", label: "Lavandería" },
+  { value: "ferreteria", label: "Ferretería" },
+  { value: "cybercafe", label: "Cybercafé" },
+  { value: "comedor", label: "Comedor" },
+  { value: "papeleria", label: "Papelería" },
+  { value: "repuestos", label: "Venta de repuestos" },
+  { value: "celulares", label: "Tienda de celulares o Recargas" },
+  { value: "verduleria", label: "Verdulería o Frutiver" },
+  { value: "carniceria", label: "Carnicería o Charcutería" },
+  { value: "cerrajeria", label: "Cerrajería o Electricista" },
+  { value: "ropa", label: "Tienda de ropa usada" },
+  { value: "licoreria", label: "Licorería" },
+  { value: "veterinaria", label: "Veterinaria" },
+  { value: "mascotas", label: "Tienda de mascotas" },
+]
+
