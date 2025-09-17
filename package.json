@@ -58,7 +58,7 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.6",
     "zod": "^3.24.1",
-    "react-native": "latest",
+    "react-native": "^0.74.0",
     "@react-navigation/native": "latest",
     "react-native-gesture-handler": "latest",
     "react-native-safe-area-context": "latest",
