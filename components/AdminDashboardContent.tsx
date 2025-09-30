@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -91,11 +91,12 @@ export default function AdminDashboardContent() {
     const storedRoutes = JSON.parse(localStorage.getItem("routes") || "[]")
     const storedMessengers = JSON.parse(localStorage.getItem("messengers") || "[]")
     const storedFavors = JSON.parse(localStorage.getItem("favors") || "[]")
+    const storedTasks = JSON.parse(localStorage.getItem("messengerTasks") || "{}")
+    const storedWorkdays = JSON.parse(localStorage.getItem("messengerWorkdays") || "{}")
+
     setRoutes(storedRoutes)
     setMessengers(storedMessengers)
     setFavors(storedFavors)
-    const storedTasks = JSON.parse(localStorage.getItem("messengerTasks") || "{}")
-    const storedWorkdays = JSON.parse(localStorage.getItem("messengerWorkdays") || "{}")
     setMessengerTasks(storedTasks)
     setMessengerWorkdays(storedWorkdays)
   }, [])
@@ -115,15 +116,15 @@ export default function AdminDashboardContent() {
     }
   }, [])
 
-  const handleAddRoute = (e: React.FormEvent) => {
+  const handleAddRoute = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     const updatedRoutes = [...routes, { ...newRoute, id: Date.now().toString() }]
     setRoutes(updatedRoutes)
     localStorage.setItem("routes", JSON.stringify(updatedRoutes))
-    setNewRoute({ name: "", description: "", fund: "", currency: "" }) // Resetear todos los campos
-  }
+    setNewRoute({ name: "", description: "", fund: "", currency: "" })
+  }, [routes, newRoute])
 
-  const handleAddMessenger = (e: React.FormEvent) => {
+  const handleAddMessenger = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     const newMessengerId = Date.now().toString()
     const newMessengerData = { ...newMessenger, id: newMessengerId }
@@ -131,14 +132,13 @@ export default function AdminDashboardContent() {
     setMessengers(updatedMessengers)
     localStorage.setItem("messengers", JSON.stringify(updatedMessengers))
     setNewMessenger({ apodo: "", route: "" })
-    // Resetear el desplegable de Zona-Fondo
     const routeSelect = document.getElementById("ruta") as HTMLSelectElement
     if (routeSelect) {
       routeSelect.value = ""
     }
-  }
+  }, [messengers, newMessenger])
 
-  const handleAddFavor = (e: React.FormEvent) => {
+  const handleAddFavor = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     const newFavorWithStatus = {
       ...newFavor,
@@ -164,7 +164,7 @@ export default function AdminDashboardContent() {
       numeroPeriodos: "",
       zonaFondo: "",
     })
-  }
+  }, [favors, newFavor])
 
   const handleEditRoute = (id: string) => {
     const routeToEdit = routes.find((route) => route.id === id)
@@ -224,7 +224,7 @@ export default function AdminDashboardContent() {
     }
   }
 
-  const getTotalAmount = (zonaFondo: string, messengerApodo: string) => {
+  const getTotalAmount = useCallback((zonaFondo: string, messengerApodo: string) => {
     return favors
       .filter(
         (favor) =>
@@ -232,9 +232,9 @@ export default function AdminDashboardContent() {
           (!messengerApodo || favor.messengerApodo === messengerApodo),
       )
       .reduce((sum, favor) => sum + Number.parseFloat(favor.amount), 0)
-  }
+  }, [favors, routes])
 
-  const getCollectedAmount = (zonaFondo: string, messengerApodo: string) => {
+  const getCollectedAmount = useCallback((zonaFondo: string, messengerApodo: string) => {
     return favors
       .filter(
         (favor) =>
@@ -243,13 +243,13 @@ export default function AdminDashboardContent() {
           favor.status === "Finalizado",
       )
       .reduce((sum, favor) => sum + Number.parseFloat(favor.amount), 0)
-  }
+  }, [favors, routes])
 
-  const getOutstandingBalance = (zonaFondo: string, messengerApodo: string) => {
+  const getOutstandingBalance = useCallback((zonaFondo: string, messengerApodo: string) => {
     return getTotalAmount(zonaFondo, messengerApodo) - getCollectedAmount(zonaFondo, messengerApodo)
-  }
+  }, [getTotalAmount, getCollectedAmount])
 
-  const getLoanedAmount = (zonaFondo: string, messengerApodo: string) => {
+  const getLoanedAmount = useCallback((zonaFondo: string, messengerApodo: string) => {
     return favors
       .filter(
         (favor) =>
@@ -257,9 +257,9 @@ export default function AdminDashboardContent() {
           (!messengerApodo || favor.messengerApodo === messengerApodo),
       )
       .reduce((sum, favor) => sum + Number.parseFloat(favor.amount), 0)
-  }
+  }, [favors, routes])
 
-  const getChartData = () => {
+  const chartData = useMemo(() => {
     switch (selectedDataType) {
       case "total":
         return [{ name: "Total", amount: getTotalAmount(selectedZonaFondo, selectedMessenger) }]
@@ -270,9 +270,7 @@ export default function AdminDashboardContent() {
       default:
         return []
     }
-  }
-
-  const chartData = getChartData()
+  }, [selectedDataType, selectedZonaFondo, selectedMessenger, getTotalAmount, getLoanedAmount, getCollectedAmount])
 
   const handleDownloadRoutePDF = (routeId: string) => {
     const route = routes.find((r) => r.id === routeId)
@@ -534,7 +532,7 @@ export default function AdminDashboardContent() {
                   </div>
                   <div className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={getChartData()}>
+                      <BarChart data={chartData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
                         <YAxis />

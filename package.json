@@ -58,19 +58,7 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.6",
     "zod": "^3.24.1",
-    "react-native": "^0.74.0",
-    "@react-navigation/native": "latest",
-    "react-native-gesture-handler": "latest",
-    "react-native-safe-area-context": "latest",
-    "react-native-screens": "latest",
-    "@types/react": "latest",
-    "react-native-svg": "latest",
-    "react-native-vector-icons": "latest",
-    "@react-navigation/stack": "latest",
-    "@react-navigation/bottom-tabs": "latest",
-    "react-native-feather": "latest",
-    "react-native-paper": "latest",
-    "jspdf": "latest"
+    "jspdf": "^2.5.2"
   },
   "devDependencies": {
     "@types/node": "^22",
